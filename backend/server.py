@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict
@@ -17,14 +17,26 @@ strategies_collection = db['strategies']
 
 app = FastAPI(title="Lords Mobile AI Assistant")
 
-# CORS configuration
+# CORS configuration - Secure settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # Frontend URLs only
+    allow_credentials=False,  # Disabled for security
+    allow_methods=["GET", "POST", "OPTIONS"],  # Only required methods
+    allow_headers=["Content-Type", "Authorization"],  # Specific headers only
 )
+
+# Security headers middleware
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = "default-src 'self'"
+    return response
 
 # Data models
 class UnitComposition(BaseModel):
@@ -379,4 +391,5 @@ async def optimize_army_composition(
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    # Bind to localhost only for security
+    uvicorn.run(app, host="127.0.0.1", port=8001)

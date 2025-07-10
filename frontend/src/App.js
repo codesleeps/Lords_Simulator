@@ -3,6 +3,195 @@ import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
+// Comprehensive list of all Lords Mobile heroes
+const HERO_NAMES = [
+  '',
+  // F2P Heroes
+  'Demon Slayer',
+  'Child of Light',
+  'Oath Keeper',
+  'Prima Donna',
+  'Snow Queen',
+  'Death Knight',
+  'Black Crow',
+  'Scarlet Bolt',
+  'Soul Forger',
+  'Grove Guardian',
+  'Sage of Storms',
+  'Bombin\' Goblin',
+  'Tracker',
+  'Fem Fatale',
+  'Elementalist',
+  'Prince of Thieves',
+  'Barbarian',
+  'Lore Weaver',
+  'Mastercook',
+  'Incinerator',
+  'Dark Follower',
+  'Shade',
+  'Night Raven',
+  'Berserker',
+  'Trickster',
+  'Demon Hunter',
+  'Lightning Arrow',
+  'Golden Golem',
+  'Dark Magister',
+  'Death Archer',
+  'Rose Knight',
+  'Petite Devil',
+  'Storm Fox',
+  'Night Raven',
+  'Vengeful Centaur',
+  'Dark Follower',
+  'Ethereal Guide',
+  
+  // P2P Heroes
+  'Watcher',
+  'Sea Squire',
+  'Songstress of the Sea',
+  'The Big Guy',
+  'Grim Wolf',
+  'Ethereal Guide',
+  'Vengeful Centaur',
+  'Bon Appetit',
+  'Lunar Flare',
+  'Witch Doll',
+  'Ancient Evil',
+  'Sage of Storms',
+  'Shade',
+  'Tidal Titan',
+  'Berserker',
+  'Heartbreaker',
+  'Crimson Witch',
+  'Bombin\' Goblin',
+  'Grim Wolf',
+  'The Big Guy',
+  'Shapeshifter',
+  'Donkey',
+  'Shaman',
+  'Grim Reaper',
+  'Saberfang',
+  'Demon Slayer',
+  'Witch Doll',
+  'Ancient Evil',
+  'Sage of Storms',
+  'Berserker',
+  'Mastercook',
+  'Death Knight',
+  'Snow Queen',
+  'Child of Light',
+  'Prima Donna',
+  'Oath Keeper',
+  'Rose Knight',
+  'Black Crow',
+  'Scarlet Bolt',
+  'Soul Forger',
+  'Grove Guardian',
+  'Tracker',
+  'Fem Fatale',
+  'Elementalist',
+  'Prince of Thieves',
+  'Barbarian',
+  'Lore Weaver',
+  'Incinerator',
+  'Dark Follower',
+  'Night Raven',
+  'Trickster',
+  'Demon Hunter',
+  'Lightning Arrow',
+  'Golden Golem',
+  'Dark Magister',
+  'Death Archer',
+  'Petite Devil',
+  'Storm Fox',
+  'Vengeful Centaur',
+  'Ethereal Guide',
+  
+  // Special Event Heroes
+  'Dream Witch',
+  'Scarlet Bolt',
+  'Tidal Titan',
+  'Lunar Flare',
+  'Witch Doll',
+  'Ancient Evil',
+  'Heartbreaker',
+  'Crimson Witch',
+  'Grim Wolf',
+  'The Big Guy',
+  'Shapeshifter',
+  'Donkey',
+  'Shaman',
+  'Grim Reaper',
+  'Saberfang',
+  'Bon Appetit',
+  'Sea Squire',
+  'Songstress of the Sea',
+  'Watcher',
+  
+  // Colosseum Heroes
+  'Evil Weaver',
+  'Lich',
+  'Carrion Hunter',
+  'Berserker',
+  'Trickster',
+  'Lightning Arrow',
+  'Golden Golem',
+  'Death Archer',
+  'Night Raven',
+  'Demon Hunter',
+  'Dark Magister',
+  'Petite Devil',
+  'Storm Fox',
+  'Vengeful Centaur',
+  'Ethereal Guide',
+  
+  // Kingdom vs Kingdom Heroes
+  'Bloodnight',
+  'Necromancer',
+  'Wolven',
+  'Inquisitor',
+  'Pyris',
+  'Frostwing',
+  'Arcane',
+  'Vampire',
+  'Griffin',
+  'Phoenix',
+  'Hydra',
+  'Kraken',
+  'Tempest',
+  'Frost Giant',
+  'Fire Elemental',
+  'Ice Elemental',
+  'Earth Elemental',
+  'Wind Elemental',
+  
+  // Premium Heroes
+  'Lich',
+  'Evil Weaver',
+  'Carrion Hunter',
+  'Bloodnight',
+  'Necromancer',
+  'Wolven',
+  'Inquisitor',
+  'Pyris',
+  'Frostwing',
+  'Arcane',
+  'Vampire',
+  'Griffin',
+  'Phoenix',
+  'Hydra',
+  'Kraken',
+  'Tempest',
+  'Frost Giant',
+  'Fire Elemental',
+  'Ice Elemental',
+  'Earth Elemental',
+  'Wind Elemental',
+  
+  // Custom Option
+  'Custom Hero'
+];
+
 function App() {
   const [activeTab, setActiveTab] = useState('battle');
   const [battleResult, setBattleResult] = useState(null);
@@ -259,13 +448,17 @@ function App() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-1">Hero Name</label>
-                      <input
-                        type="text"
+                      <select
                         value={playerArmy.hero.name}
                         onChange={(e) => updatePlayerHero('name', e.target.value)}
-                        className="w-full p-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                        placeholder="Hero name"
-                      />
+                        className="w-full p-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                      >
+                        {HERO_NAMES.map((heroName, index) => (
+                          <option key={index} value={heroName} className="bg-gray-800 text-white">
+                            {heroName === '' ? 'Select Hero...' : heroName}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-1">Army Attack</label>
@@ -362,13 +555,17 @@ function App() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-1">Hero Name</label>
-                      <input
-                        type="text"
+                      <select
                         value={enemyArmy.hero.name}
                         onChange={(e) => updateEnemyHero('name', e.target.value)}
-                        className="w-full p-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                        placeholder="Hero name"
-                      />
+                        className="w-full p-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                      >
+                        {HERO_NAMES.map((heroName, index) => (
+                          <option key={index} value={heroName} className="bg-gray-800 text-white">
+                            {heroName === '' ? 'Select Hero...' : heroName}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-1">Army Attack</label>
