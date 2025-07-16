@@ -10,10 +10,24 @@ import math
 
 # Database setup
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-client = MongoClient(MONGO_URL)
-db = client['lords_mobile_ai']
-battles_collection = db['battles']
-strategies_collection = db['strategies']
+
+# Try to connect to MongoDB, but don't fail if it's not available
+try:
+    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000)
+    # Test the connection
+    client.server_info()
+    db = client['lords_mobile_ai']
+    battles_collection = db['battles']
+    strategies_collection = db['strategies']
+    mongo_available = True
+    print("MongoDB connected successfully")
+except Exception as e:
+    print(f"MongoDB not available: {e}")
+    print("Running in test mode without database persistence")
+    mongo_available = False
+    # Create dummy collections for testing
+    battles_collection = None
+    strategies_collection = None
 
 app = FastAPI(title="Lords Mobile AI Assistant")
 
@@ -288,14 +302,15 @@ async def simulate_battle_endpoint(battle_request: BattleRequest):
         )
         
         # Save to database
-        battles_collection.insert_one({
-            "battle_id": battle_id,
-            "timestamp": datetime.now(),
-            "player_army": battle_request.player_army.dict(),
-            "enemy_army": battle_request.enemy_army.dict(),
-            "result": result.dict(),
-            "scenario": battle_request.scenario
-        })
+        if mongo_available:
+            battles_collection.insert_one({
+                "battle_id": battle_id,
+                "timestamp": datetime.now(),
+                "player_army": battle_request.player_army.dict(),
+                "enemy_army": battle_request.enemy_army.dict(),
+                "result": result.dict(),
+                "scenario": battle_request.scenario
+            })
         
         return result
         
@@ -306,6 +321,8 @@ async def simulate_battle_endpoint(battle_request: BattleRequest):
 async def get_battle_history(limit: int = 10):
     """Get recent battle simulations"""
     try:
+        if not mongo_available:
+            return {"battles": [], "message": "Database not available for history retrieval."}
         battles = list(battles_collection.find(
             {}, 
             {"_id": 0}
